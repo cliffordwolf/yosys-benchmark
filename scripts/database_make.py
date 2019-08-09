@@ -80,7 +80,7 @@ while queue:
                 if (item.endswith("_tb.v")):
                     print("  Skipping Verilog testbench file " + item)
                     continue
-                # skip any netlist files that might have been produced in 
+                # skip any netlist files that might have been produced in
                 # previous runs
                 if (item.endswith("_netlist.v")):
                     print("  Skipping Verilog netlist file " + item)
@@ -95,11 +95,26 @@ while queue:
                                             stderr=sys.stderr
                                             )
                 datfile.close()
+            # diego: Sepparating SV for consistency [?]
+            if (item.endswith(".sv")):
+                if (item.endswith("_tb.sv")):
+                    print("  Skipping SystemVerilog testbench file " + item)
+                    continue
+                systemverilogsrc = os.path.join(subdir, item)
+                filewithoutext, file_extension = os.path.splitext(item)
+                datfile = open(os.path.join(dbpath, filewithoutext + ".dat"), "wt")
+                print("  Running SystemVerilog file " + item)
+                retval = subprocess.check_call([os.path.abspath("./scripts/"+shellScriptName+".sh"), os.path.abspath("./" +systemverilogsrc), celllibpath],
+                                               cwd=os.path.abspath(subdir),
+                                               stdout=datfile,
+                                               stderr=sys.stderr
+                )
+                datfile.close()
 
             if (item.endswith(".vhdl")):
-                # diego: VHDL broken, reading testvector files 
+                # diego: VHDL broken, reading testvector files
                 if (item.endswith("_tb.vhdl")):
-                    print("  Skipping VHDL testvector file " +item)
+                    print("  Skipping VHDL testvector file " + item)
                     continue
                 vhdlsrc = os.path.join(subdir, item)
                 filewithoutext, file_extension = os.path.splitext(item)

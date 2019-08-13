@@ -95,6 +95,7 @@ while queue:
                                             stderr=sys.stderr
                                             )
                 datfile.close()
+
             # diego: Sepparating SV for consistency [?]
             if (item.endswith(".sv")):
                 if (item.endswith("_tb.sv")):
@@ -108,7 +109,7 @@ while queue:
                                                cwd=os.path.abspath(subdir),
                                                stdout=datfile,
                                                stderr=sys.stderr
-                )
+                                               )
                 datfile.close()
 
             if (item.endswith(".vhdl")):

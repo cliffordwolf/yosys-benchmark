@@ -1,2 +1,2 @@
 read -sv hermeslite.sv
-synth_ice40 -top hermeslite
+synth_xilinx -top hermeslite

@@ -15362,8 +15362,8 @@ asmi_asmi_parallel_0 asmi_inst(
 	.sector_erase(sector_erase),
 	.busy(busy),
 	.clkin(clock),
-    .wren(write_enable),
-    //.sector_protect(0),
+        .wren(write_enable),
+        //.sector_protect(0),
 	.datain(datain),
 	.write(write),
 	.shift_bytes(shift_bytes),
@@ -17340,6 +17340,7 @@ endmodule //altera_remote_update_core
 `timescale 1 ps / 1 ps
 //synopsys translate_on
 (* ALTERA_ATTRIBUTE = {"SUPPRESS_DA_RULE_INTERNAL=C106"} *)
+(* blackbox *)
 module  asmi_asmi_parallel_0
 	( 
 	addr,
@@ -17380,6 +17381,7 @@ module  asmi_asmi_parallel_0
 	input   shift_bytes;
 	input   wren;
 	input   write;
+/*
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -19066,6 +19068,7 @@ module  asmi_asmi_parallel_0
 		write_sdoin = ((((do_write & stage4_wire) & wire_wrstage_cntr_q[1]) & wire_wrstage_cntr_q[0]) & pgwrbuf_dataout[7]),
 		write_wire = write_reg,
 		wrvolatile_opcode = {8{1'b0}};
+*/ //dh: combloop
 endmodule //asmi_asmi_parallel_0
 //VALID FILE
 
@@ -20938,7 +20941,7 @@ end
 
 endmodule
 
-// Altera IP
+// Altera IP blackboxes used in this design
 (* blackbox *)
 module altclkctrl
  #(parameter clock_type="auto",

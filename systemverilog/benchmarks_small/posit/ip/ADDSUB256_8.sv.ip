@@ -1,0 +1,11 @@
+(* blackbox *)
+module ADDSUB256_8
+  (input CLK,
+   input SCLR,
+   input ADD,
+   input [16:0]  A,
+   input [16:0]  B,
+   output [16:0] S);
+
+endmodule
+

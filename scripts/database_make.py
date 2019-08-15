@@ -74,6 +74,19 @@ while queue:
                     except ValueError as error:
                         print("  --- ERROR PARSING CONFIG.JSON ---")
                         pass
+            # if there's a script file, just call it
+            if (item.endswith(".ys")):
+                print(" Running YOSYS script ")
+                ys = os.path.join(subdir, item)
+                filewithoutext, file_extension = os.path.splitext(item)
+                datfile = open(os.path.join(dbpath, filewithoutext + ".dat"), "wt")
+                retval = subprocess.check_call([os.path.abspath("./scripts/"+shellScriptName+".sh"),os.path.abspath("./" +ys), celllibpath],
+                                            cwd=os.path.abspath(subdir),
+                                            stdout=datfile,
+                                            stderr=sys.stderr
+                                            )
+                datfile.close()
+
             if (item.endswith(".v")):
                 # skip all files that end in _tb.v as they are testbench files
                 # containing unsynthesizable code
@@ -94,22 +107,6 @@ while queue:
                                             stdout=datfile,
                                             stderr=sys.stderr
                                             )
-                datfile.close()
-
-            # diego: Sepparating SV for consistency [?]
-            if (item.endswith(".sv")):
-                if (item.endswith("_tb.sv")):
-                    print("  Skipping SystemVerilog testbench file " + item)
-                    continue
-                systemverilogsrc = os.path.join(subdir, item)
-                filewithoutext, file_extension = os.path.splitext(item)
-                datfile = open(os.path.join(dbpath, filewithoutext + ".dat"), "wt")
-                print("  Running SystemVerilog file " + item)
-                retval = subprocess.check_call([os.path.abspath("./scripts/"+shellScriptName+".sh"), os.path.abspath("./" +systemverilogsrc), celllibpath],
-                                               cwd=os.path.abspath(subdir),
-                                               stdout=datfile,
-                                               stderr=sys.stderr
-                                               )
                 datfile.close()
 
             if (item.endswith(".vhdl")):

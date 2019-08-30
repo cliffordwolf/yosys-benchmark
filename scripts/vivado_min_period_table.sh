@@ -1,3 +1,4 @@
+#!/bin/bash
 for D in *; do
     if [ -d "$D" ] && [ -f "$D/results.txt" ]; then
         min_period="$(<$D/results.txt)"
@@ -16,7 +17,17 @@ for D in *; do
         echo "	F7 Muxes: $f7"
         echo "	F8 Muxes: $f8"
         echo "	Fx Muxes: $(($f7+$f8))"
-        sed -n "s/|\s\+\(DSP48E1\)\s\+|\s\+\([0-9]\+\).*/\t\1: \2/p" "$D/test_$min_period.txt" | tail -n 1
+	if grep -q -e "|\s\+RAM[A-Z][0-9]\{2\}[A-Z]" "$D/test_$min_period.txt"; then
+		RAMB36E1=`sed -n "s/|\s\+\(RAMB36E1\)\s\+|\s\+\([0-9]\+\).*/\2/p" "$D/test_$min_period.txt" | tail -n 1`
+		RAMB18E1=`sed -n "s/|\s\+\(RAMB36E1\)\s\+|\s\+\([0-9]\+\).*/\2/p" "$D/test_$min_period.txt" | tail -n 1`
+		echo -e "	BRAM: $(($RAMB36E1+$RAMB18E1)) \n\t\tRAMB36E1: $RAMB36E1 \n\t\tRAMB18E1: $RAMB18E1"
+	fi
+	if grep -q -e "|\s\+RAM[A-Z][0-9]\s*[0-9][A-Z]" "$D/test_$min_period.txt"; then
+		RAMD32=`sed -n "s/|\s\+\(RAMD32\)\s\+|\s\+\([0-9]\+\).*/\2/p" "$D/test_$min_period.txt" | tail -n 1`
+        	RAMS32=`sed -n "s/|\s\+\(RAMS32\)\s\+|\s\+\([0-9]\+\).*/\2/p" "$D/test_$min_period.txt" | tail -n 1`
+        	echo -e "	LUTRAM: $(($RAMD32+$RAMS32)) \n\t\tRAMD32: $RAMD32 \n\t\tRAMS32: $RAMS32"
+	fi
+	sed -n "s/|\s\+\(DSP48E1\)\s\+|\s\+\([0-9]\+\).*/\t\1: \2/p" "$D/test_$min_period.txt" | tail -n 1
         sed -n "s/|\s\+End Point Clock\s\+.*|\s\+\([0-9]\+\).*/\tLogic Levels: \1/p" "$D/test_$min_period.txt" | tail -n 1
         sed -n "s/|\s\+\(Logical Path\)\s\+|\s\+\(.*\+\)\s\+|$/\t\1: \2/p" "$D/test_$min_period.txt" | tail -n 1
     fi

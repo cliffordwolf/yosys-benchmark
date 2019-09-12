@@ -10,7 +10,7 @@ all: $(TARGETS)
 	../../scripts/vivado_min_period_table.sh
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
-	f=(../../verilog/benchmarks_large/cam/cam_srl_top.v); \
-	../../scripts/vivado_min_period.sh $${f[0]} $(DEVICE) $(GRADE)
+	f=(../../*/benchmarks_*/*/$*.{v.gz,v,vhdl}); \
+	../../scripts/vivado_min_period.sh --directive $(DIRECTIVE) $${f[0]} $(DEVICE) $(GRADE) --rdir $(DIR)
 clean:
 	rm -r tab_*

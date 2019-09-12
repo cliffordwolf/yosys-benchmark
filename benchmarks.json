@@ -1,0 +1,26 @@
+[
+        {
+                "Tool": "vivado",
+                "Directive": "Explore",
+                "Report": "vivado_explore"
+        },
+
+        {
+                "Tool": "vivado",
+                "Directive": "Default",
+                "Report": "vivado_default"
+        },
+
+        {
+                "Tool": "yosys",
+                "Directive": "Explore",
+                "Report": "yosys_explore"
+        },
+
+        {
+                "Tool": "ise",
+                "Directive": "just_for_testing",
+                "Report": "s6_just_for_testing"
+        }
+]
+

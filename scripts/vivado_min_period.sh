@@ -13,9 +13,9 @@
 # - Binary search to find minimum clock period (within 100ps) with positive slack
 
 set -e
-path=`readlink -f "$1"`
-dev="$2"
-grade="$3"
+path=`readlink -f "$3"`
+dev="$4"
+grade="$5"
 ip="$(basename -- ${path})"
 ip=${ip%.gz}
 ip=${ip%.*}
@@ -23,17 +23,25 @@ ip=${ip%.*}
 VIVADO=${VIVADO:-vivado}
 
 # rm -rf tab_${ip}_${dev}_${grade}
-mkdir -p tab_${ip}_${dev}_${grade}
-cd tab_${ip}_${dev}_${grade}
-rm -f ${ip}.edif
+if [ $6 == "--rdir" ] || [ $6 == "-d" ]
+then
+  echo "Saving results in ${7}"
+  #dir=$7_$(date +%Y%m%d_%H%M%S)
+  dir=$7
+  mkdir -p $dir
+  cd $dir
+  mkdir -p tab_${ip}_${dev}_${grade}
+  cd tab_${ip}_${dev}_${grade}
+  rm -f ${ip}.edif
+fi
 
 best_speed=10000
 speed=50
 step=16
 
 synth_case() {
-	if [ -f test_${1}.txt ]; then
-		echo "Reusing cached tab_${ip}_${dev}_${grade}/test_${1}."
+	if [ -f test_${2}.txt ]; then
+		echo "Reusing cached tab_${ip}_${dev}_${grade}/test_${2}."
 		return
 	fi
 
@@ -47,20 +55,20 @@ synth_case() {
 		xcvup) xl_device="xcvu3p-ffvc1517-${grade}-e" ;;
 	esac
 
-	cat > test_${1}.tcl <<- EOT
+	cat > test_${2}.tcl <<- EOT
 		set_param general.maxThreads 1
 		set_property IS_ENABLED 0 [get_drc_checks {PDRC-43}]
 	EOT
 
 	pwd=$PWD
 	if [ -z "$YOSYS" ]; then
-		cat >> test_${1}.tcl <<- EOT
+		cat >> test_${2}.tcl <<- EOT
 			cd $(dirname ${path})
 		EOT
 		if [ "${path##*.}" == "gz" ]; then
 			gunzip -f -k ${path}
 		fi
-		cat >> test_${1}.tcl <<- EOT
+		cat >> test_${2}.tcl <<- EOT
 			if {[file exists "$(dirname ${path})/${ip}_vivado.tcl"] == 1} {
 				source ${ip}_vivado.tcl
 			} else {
@@ -73,9 +81,9 @@ synth_case() {
 				set_property TOP [lindex [find_top] 0] [current_fileset]
 			}
 			cd ${PWD}
-			read_xdc test_${1}.xdc
+			read_xdc test_${2}.xdc
 			synth_design -part ${xl_device} -mode out_of_context ${SYNTH_DESIGN_OPTS}
-			opt_design -directive Explore
+			opt_design -directive $directive
 		EOT
 
 	else
@@ -108,39 +116,52 @@ synth_case() {
 			mv yosys.log yosys.txt
 		fi
 
-		cat >> test_${1}.tcl <<- EOT
+		cat >> test_${2}.tcl <<- EOT
 			read_edif ${ip}.edif
-			read_xdc test_${1}.xdc
+			read_xdc test_${2}.xdc
 			link_design -part ${xl_device} -mode out_of_context -top ${ip}
 		EOT
 	fi
 
-	cat > test_${1}.xdc <<- EOT
+	cat > test_${2}.xdc <<- EOT
 		create_clock -period ${speed:0: -1}.${speed: -1} [get_ports -nocase -regexp .*cl(oc)?k.*]
 	EOT
-	cat >> test_${1}.tcl <<- EOT
+	cat >> test_${2}.tcl <<- EOT
 		report_design_analysis
-		place_design -directive Explore
-		route_design -directive Explore
+		place_design -directive $directive
+		route_design -directive $directive
 		report_utilization
 		report_timing -no_report_unconstrained
 		report_design_analysis
 	EOT
 
-	echo "Running tab_${ip}_${dev}_${grade}/test_${1}.."
-	if ! $VIVADO -nojournal -log test_${1}.log -mode batch -source test_${1}.tcl > /dev/null 2>&1; then
-		cat test_${1}.log
+	echo "Running tab_${ip}_${dev}_${grade}/test_${2}.."
+	if ! $VIVADO -nojournal -log test_${2}.log -mode batch -source test_${2}.tcl > /dev/null 2>&1; then
+		cat test_${2}.log
 		exit 1
 	fi
-	mv test_${1}.log test_${1}.txt
+	mv test_${2}.log test_${2}.txt
 }
+
+## diego
+for args in "$@"
+do
+	if [ $args == "--help" ] || [ $args == "-h" ]
+	then
+		echo "usage: vivado_min_period.sh <directive>"
+	fi
+	if [ $args == "--directive" ]
+	then
+		directive=$2
+	fi
+done
 
 got_violated=false
 got_met=false
 
 countdown=2
 while [ $countdown -gt 0 ]; do
-	synth_case $speed
+	synth_case $directive $speed
 
 	if grep -q '^Slack.*(VIOLATED)' test_${speed}.txt; then
 		echo "        tab_${ip}_${dev}_${grade}/test_${speed} VIOLATED"
@@ -180,4 +201,5 @@ echo "-----------------------"
 echo "Best speed for tab_${ip}_${dev}_${grade}: $best_speed"
 echo "-----------------------"
 echo $best_speed > results.txt
+
 

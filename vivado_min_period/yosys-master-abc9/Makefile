@@ -13,7 +13,7 @@ tab_%_$(DEVICE)_$(GRADE)/results.txt:
 	if ! zgrep -q "\(* top *\)" $${f[0]}; then \
 		TOP="-top $*"; \
 	fi; \
-	YOSYS_SYNTH="synth_xilinx -abc9 -edif $(PWD)/$$(dirname $@)/$*.edif" bash ../../scripts/vivado_min_period.sh $${f[0]} $(DEVICE) $(GRADE)
+	YOSYS_SYNTH="synth_xilinx -abc9 -edif $(PWD)/$(DIR)/$$(dirname $@)/$*.edif" bash ../../scripts/vivado_min_period.sh --directive $(DIRECTIVE) $${f[0]} $(DEVICE) $(GRADE) --rdir $(DIR)
 
 clean:
-	rm -r tab_*
+	rm -rf tab_*

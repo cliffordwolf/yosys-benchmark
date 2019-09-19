@@ -9,6 +9,7 @@ import logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 # Makefile dirs
+ise_makefile='ise_min_period'
 vivado_makefile='vivado_min_period/vivado-2018.3'
 yosys_abc9_makefile='vivado_min_period/yosys-master-abc9/'
 
@@ -41,15 +42,18 @@ def execute_json(data):
                 execute_command(command)
                 os.chdir(sys.path[0])
             elif (recipeFile[items]["Tool"] == "yosys"):
-                logging.info("Moving to Yosys directory to store results")
+                command=(command+' YSARGS="{}"&'.format(recipeFile[items]["YosysArgs"]))
+                logging.info("Moving to Yosys directory to store results. Executing command {}".format(command))
                 os.chdir(yosys_abc9_makefile)
                 logging.info("Executing Yosys Makefile")
                 execute_command(command)
                 os.chdir(sys.path[0])
+            elif (recipeFile[items]["Tool"] == "ise"):
+                logging.info("Moving to ISE directory to store results")
+                os.chdir(ise_makefile)
+                logging.info("Executinh ISE Makefile")
             else:
                 logging.warning("No process executed. Review the JSON recipe file")
-
-
 """ 
 Main
 """

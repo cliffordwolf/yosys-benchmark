@@ -9,7 +9,7 @@ all: $(TARGETS)
 	../../scripts/ise_min_period_table.sh
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
-	../../scripts/ise_min_period.sh ../../*/benchmarks_*/*/$*.{v,vhdl} $(DEVICE) $(GRADE)
+	../../scripts/ise_min_period.sh ../../*/benchmarks_*/*/$*.{v,vhdl} $(DEVICE) $(GRADE) --rdir $(DIR)
 
 clean:
-	rm -r tab_*
+	 rm -r tab_*

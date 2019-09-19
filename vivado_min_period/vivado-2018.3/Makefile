@@ -4,10 +4,12 @@ unexport YOSYS
 DEVICE=xc7a
 GRADE=1
 TARGETS=$(patsubst %,tab_%_$(DEVICE)_$(GRADE)/results.txt,$(basename $(notdir $(BENCHMARKS))))
+TARGET=$(DIR)
+
 HDL_FILES=$(shell find ../../*/benchmarks* -name  "*.v*")
 
 all: $(TARGETS)
-	../../scripts/vivado_min_period_table.sh
+	cd $(TARGET) && ../../../scripts/vivado_min_period_table.sh > results_$(DEVICE)_$(DIRECTIVE)_$(DIR).csv
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
 	f=(../../*/benchmarks_*/*/$*.{v.gz,v,vhdl}); \

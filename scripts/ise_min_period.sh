@@ -9,8 +9,19 @@ ip=${ip%.gz}
 ip=${ip%.*}
 
 # rm -rf tab_${ip}_${dev}_${grade}
-mkdir -p tab_${ip}_${dev}_${grade}
-cd tab_${ip}_${dev}_${grade}
+if [ $4 == "--rdir" ] || [ $4 == "-d" ]
+then
+  echo "Saving results in ${5}"
+  dir=$5
+  mkdir -p $dir
+  cd $dir
+  mkdir -p tab_${ip}_${dev}_${grade}
+  cd tab_${ip}_${dev}_${grade}
+  rm -f ${ip}.edif
+else
+  mkdir -p tab_${ip}_${dev}_${grade}
+  cd tab_${ip}_${dev}_${grade}
+fi
 
 best_speed=10000
 speed=50
@@ -54,7 +65,7 @@ synth_case() {
 				verilog work $(basename ${path})
 			EOT
 		fi
-		echo "run -ifn ${pwd}/test_${1}.prj -ifmt mixed -top ${TOP} -ofn ${pwd}/test_${1}.ngc -ofmt NGC -p ${xl_device} -uc ${pwd}/test_${1}.xcf -iobuf no" > test_${1}.xst
+		echo "run -ifn ${pwd}/test_${1}.prj -ifmt mixed -top ${TOP} -ofn ${pwd}/test_${1}.ngc -ofmt NGC -p ${xl_device} -uc ${pwd}/test_${1}.xcf -iobuf no -vlgincdir { \"$(dirname ${path})\" }" > test_${1}.xst
 		cat > test_${1}.xcf <<- EOT
 			NET "$(<$(dirname ${path})/${ip}.clock)" TNM_NET = clk;
 			TIMESPEC TS_clk = PERIOD "clk" ${speed:0: -1}.${speed: -1} ns;

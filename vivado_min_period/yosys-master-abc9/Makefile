@@ -1,5 +1,6 @@
 include ../common.mk
-export YOSYS=/opt/yosys-master/bin/yosys
+export YOSYS=/opt/yosys-xc7dsp/bin/yosys
+#export YOSYS=/home/diego/yosys-xc7dsp/bin/yosys
 
 DEVICE=xc7a
 GRADE=1

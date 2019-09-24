@@ -128,6 +128,7 @@ synth_case() {
 	EOT
 	cat >> test_${2}.tcl <<- EOT
 		report_design_analysis
+		#set_property SEVERITY {Warning} [get_drc_checks NDRV-1]
 		place_design -directive $directive
 		route_design -directive $directive
 		report_utilization

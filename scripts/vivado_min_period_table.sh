@@ -36,6 +36,9 @@ for D in *; do
 		peakmem=`printf "%1.f" $(sed -n 's/.*total,\(.*\)MB\ resident.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)` 
 	else
 		tool="Vivado 2018.3" #TODO: Select appropiate tool/version
+	       #runtime=`sed -n 's/.*Synthesis Report : Time (s): cpu =\(.*\)\;.*/\1/p' "$D/test_$min_period.txt" | sed 's/;\s.*$//'| awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'` this also works
+		runtime=`sed -n 's/.*Synthesis Report : Time (s): cpu =\(.*\)\;.*/\1/p' "$D/test_$min_period.txt" | sed 's/;\s.*$//' | sed -E 's/(.*):(.+):(.+)/\1*3600+\2*60+\3/;s/(.+):(.+)/\1*60+\2/' | bc`
+                peakmem=`printf "%1.f" $(sed -n 's/.*Synthesis Report\(.*\)\..*/\1/p' "$D/test_$min_period.txt" |sed -n 's/.*peak =\(.*\);..*/\1/p')`
 	fi
 	echo "Design: $D"
 	#echo ",Tool,LUT,FF,BRAM,LUTRAM,DSP,SRL,CARRY4,MuxFx,Logic Levels,Max Frequency,Peak Runtime in s,Peak Memory in MB"

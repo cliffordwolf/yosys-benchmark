@@ -15,10 +15,9 @@ vivado_makefile='vivado_min_period/vivado-2018.3'
 yosys_abc9_makefile='vivado_min_period/yosys-master-abc9/'
 
 def execute_command(cmd):
-    print("ok")
-    #process=os.system(cmd)
-    #if (process != 0):
-    #    logging.error("An error occurred while running: {}".format(cmd))
+    process=os.system(cmd)
+    if (process != 0):
+        logging.error("An error occurred while running: {}".format(cmd))
 
 def run_main(runtype, **recipeFile):
     command=('{} make -j$(nproc) DIRECTIVE={} DIR={}'.format(runtype, recipeFile['Directive'], recipeFile['Report']))

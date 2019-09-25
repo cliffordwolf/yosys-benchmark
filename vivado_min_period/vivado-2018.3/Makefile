@@ -1,4 +1,9 @@
-include ../common.mk
+ifdef LARGE
+	include ../large.mk
+endif
+ifdef SMALL
+	include ../small.mk
+endif
 unexport YOSYS
 
 DEVICE=xc7a

@@ -26,7 +26,6 @@ VIVADO=${VIVADO:-vivado}
 if [ $6 == "--rdir" ] || [ $6 == "-d" ]
 then
   echo "Saving results in ${7}"
-  #dir=$7_$(date +%Y%m%d_%H%M%S)
   dir=$7
   mkdir -p $dir
   cd $dir
@@ -128,7 +127,6 @@ synth_case() {
 	EOT
 	cat >> test_${2}.tcl <<- EOT
 		report_design_analysis
-		#set_property SEVERITY {Warning} [get_drc_checks NDRV-1]
 		place_design -directive $directive
 		route_design -directive $directive
 		report_utilization

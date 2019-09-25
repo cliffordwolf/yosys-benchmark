@@ -1,6 +1,10 @@
-include ../common.mk
+ifdef LARGE
+        include ../large.mk
+endif
+ifdef SMALL
+        include ../small.mk
+endif
 export YOSYS=/opt/yosys-xc7dsp/bin/yosys
-#export YOSYS=/home/diego/yosys-xc7dsp/bin/yosys
 
 DEVICE=xc7a
 GRADE=1
@@ -8,7 +12,7 @@ TARGET=$(DIR)
 TARGETS = $(patsubst %,tab_%_$(DEVICE)_$(GRADE)/results.txt,$(basename $(notdir $(BENCHMARKS))))
 
 all: $(TARGETS)
-	cd $(TARGET) && ../../../scripts/vivado_min_period_table.sh > results_$(DEVICE)_$(DIRECTIVE)_$(DIR).csv
+	cd $(DIR) && ../../../scripts/vivado_min_period_table.sh > results_$(DEVICE)_$(DIRECTIVE)_$(DIR).csv
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
 	f=(../../*/benchmarks_*/*/$*.{v.gz,v,vhdl}); \

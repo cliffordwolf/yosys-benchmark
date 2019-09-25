@@ -10,7 +10,7 @@ all: $(TARGETS)
 	cd $(TARGET) && ../../../scripts/ise_min_period_table.sh > results_$(DEVICE)_$(DIR).csv
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
-	../../scripts/ise_min_period.sh ../../*/benchmarks_*/*/$*.{v,vhdl} $(DEVICE) $(GRADE) --rdir $(DIR)
+	../../scripts/ise_min_period.sh ../../*/benchmarks_*/*/$*.{v.gz,v,vhdl} $(DEVICE) $(GRADE) --rdir $(DIR)
 
 clean:
 	 rm -r tab_*

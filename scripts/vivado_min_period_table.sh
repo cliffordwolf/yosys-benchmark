@@ -31,12 +31,14 @@ for D in *; do
 	fi
         llevels=`sed -n "s/|\s\+End Point Clock\s\+.*|\s\+\([0-9]\+\).*/\tLogic Levels: \1/p" "$D/test_$min_period.txt" | sed 's/[^0-9]*//g' | tail -n 1`
 	if [ -f "$D/yosys.txt" ]; then 
-		tool=`sed -n 's/.*\(Yosys\ [0-9].[0-9].*\).*/\1/p' $D/yosys.txt | tail -n 1` 
+		tool=`sed -n 's/.*\(Yosys\ [0-9].[0-9].*\).*/\1/p' "$D/yosys.txt" | tail -n 1`
+                runtime=`printf "%1.f" $(sed -n 's/.*user\(.*\)system.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)`
+		peakmem=`printf "%1.f" $(sed -n 's/.*total,\(.*\)MB\ resident.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)` 
 	else
 		tool="Vivado 2018.3" #TODO: Select appropiate tool/version
 	fi
 	echo "Design: $D"
 	#echo ",Tool,LUT,FF,BRAM,LUTRAM,DSP,SRL,CARRY4,MuxFx,Logic Levels,Max Frequency,Peak Runtime in s,Peak Memory in MB"
-	echo ",\"$tool\",$lut_logic,$flops,$bram,$dram,$dsp48,$lut_slr,$carry,$muxfx,$llevels,$fmax"
+	echo ",\"$tool\",$lut_logic,$flops,$bram,$dram,$dsp48,$lut_slr,$carry,$muxfx,$llevels,$fmax,$runtime,$peakmem"
     fi
 done

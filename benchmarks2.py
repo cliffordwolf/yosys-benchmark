@@ -66,10 +66,9 @@ def execute_json(data):
 
             if key in ('Large', 'Small'):
                 runtype=("{}=1".format(key.upper()))
-                logging.warning("Sending recipeFile[keys] {} and runtype {}".format(recipeFile[key], runtype))
                 run_main(runtype, **recipeFile[key])
             else:
-                raise Exception('Value selected for benchmark type is wrong: {}. Please review the JSON file'.format(key))
+                raise Exception('Value selected for benchmark type is wrong: {}. It shoule be either Small or Large. Please review the JSON file'.format(key))
 
 """ 
 Main

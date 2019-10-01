@@ -24,35 +24,32 @@ def run_main(runtype, **recipeFile):
     if (recipeFile["Tool"] == "vivado"):
         logging.info("Moving to Vivado directory to store results. Executing command {}".format(command))
         os.chdir(vivado_makefile)
-        logging.info("Executing Vivado Makefile")
-        execute_command(command)
+        execute_command(command+"&")
         os.chdir(sys.path[0])
     elif (recipeFile["Tool"] == "yosys"):
-        command=(command+' YSARGS="{}"&'.format(recipeFile["YosysArgs"]))
+        command=(command+' YSARGS="{}"'.format(recipeFile["YosysArgs"]))
         logging.info("Moving to Yosys directory to store results. Executing command {}".format(command))
         os.chdir(yosys_abc9_makefile)
-        logging.info("Executing Yosys Makefile")
-        execute_command(command)
+        execute_command(command+"&")
         os.chdir(sys.path[0])
     elif (recipeFile["Tool"] == "ise"):
         logging.info("Moving to ISE directory to store results. Executing command {}".format(command))
         os.chdir(ise_makefile)
-        logging.info("Executing ISE Makefile")
-        logging.info("Command is {}".format(command))
-        execute_command(command)
+        execute_command(command+"&")
+        os.chdir(sys.path[0])
     elif (recipeFile["Tool"] == "yosys_s6"):
+        command=(command+' YSARGS="{}"'.format(recipeFile["YosysArgs"]))
         logging.info("Moving to Yosys S6 directory to store results. Executing command {}".format(command))
         os.chdir(yosys_s6_makefile)
-        logging.info("Executing Yosys Makefile")
-        logging.info("Command is {}".format(command))
-        execute_command(command)
+        execute_command(command+"&")
+        os.chdir(sys.path[0])
     else:
         logging.warning("No process executed. Review the JSON recipe file")
  
-def execute_json(data):
+def execute_json2(data):
     """
     This function parses a JSON file
-    to get the information of tool for synthesis (yosys, vivado, ise)
+    to get the information of tool for synthesis (yosys, vivado, ise),
     directives and possibly custom flow (TODO)
     """
     with open (data, 'r') as f:
@@ -60,13 +57,14 @@ def execute_json(data):
         logging.info("Keys are {}".format(recipeFile.keys()))
 
         for key in recipeFile.keys():
-            logging.info("Tool selected for running is: {}".format(recipeFile[key]['Tool']))
-            logging.info("Directive to perform benchmark is: {}".format(recipeFile[key]['Directive']))
-            logging.info("Type of benchmark is: {}".format(key))
-
+            logging.info("Key is {}".format(key))
             if key in ('Large', 'Small'):
                 runtype=("{}=1".format(key.upper()))
-                run_main(runtype, **recipeFile[key])
+                for values in recipeFile[key]:
+                    logging.info("Tool selected for running is: {}".format(values['Tool']))
+                    logging.info("Directive to perform benchmark is: {}".format(values['Directive']))
+                    logging.info("Type of benchmark is: {}".format(key))
+                    run_main(runtype, **values)
             else:
                 raise Exception('Value selected for benchmark type is wrong: {}. It shoule be either Small or Large. Please review the JSON file'.format(key))
 
@@ -79,6 +77,6 @@ if __name__=="__main__":
                         help="Recipe in JSON format for Benchmarks",
                         type=argparse.FileType('r'))
     arguments=parser.parse_args()
-    execute_json(arguments.recipe[0].name)
+    execute_json2(arguments.recipe[0].name)
 
 

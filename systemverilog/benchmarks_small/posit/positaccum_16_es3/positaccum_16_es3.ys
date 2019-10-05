@@ -1,0 +1,12 @@
+read -sv ../ip/posit_defines_es3.sv.ip
+read -sv positaccum_16_es3.sv
+read -sv ../ip/posit_extract_es3.sv.ip
+read -sv ../ip/posit_extract_accum_es3.sv.ip
+read -sv ../ip/ADDSUB256_8.sv.ip
+read -sv ../ip/shift_left.v.ip
+read -sv ../ip/shift_right.v.ip
+read -sv ../ip/LOD_N.sv.ip
+read -sv ../ip/LZD_N.sv.ip
+
+hierarchy -top positaccum_16_es3
+synth_ice40 -top positaccum_16_es3

@@ -74,13 +74,26 @@ while queue:
                     except ValueError as error:
                         print("  --- ERROR PARSING CONFIG.JSON ---")
                         pass
+            # if there's a script file, just call it
+            if (item.endswith(".ys")):
+                print(" Running YOSYS script ")
+                ys = os.path.join(subdir, item)
+                filewithoutext, file_extension = os.path.splitext(item)
+                datfile = open(os.path.join(dbpath, filewithoutext + ".dat"), "wt")
+                retval = subprocess.check_call([os.path.abspath("./scripts/"+shellScriptName+".sh"),os.path.abspath("./" +ys), celllibpath],
+                                            cwd=os.path.abspath(subdir),
+                                            stdout=datfile,
+                                            stderr=sys.stderr
+                                            )
+                datfile.close()
+
             if (item.endswith(".v")):
                 # skip all files that end in _tb.v as they are testbench files
                 # containing unsynthesizable code
                 if (item.endswith("_tb.v")):
                     print("  Skipping Verilog testbench file " + item)
                     continue
-                # skip any netlist files that might have been produced in 
+                # skip any netlist files that might have been produced in
                 # previous runs
                 if (item.endswith("_netlist.v")):
                     print("  Skipping Verilog netlist file " + item)
@@ -95,8 +108,12 @@ while queue:
                                             stderr=sys.stderr
                                             )
                 datfile.close()
-                    
+
             if (item.endswith(".vhdl")):
+                # diego: VHDL broken, reading testvector files
+                if (item.endswith("_tb.vhdl")):
+                    print("  Skipping VHDL testvector file " + item)
+                    continue
                 vhdlsrc = os.path.join(subdir, item)
                 filewithoutext, file_extension = os.path.splitext(item)
                 datfile = open(os.path.join(dbpath, filewithoutext + ".dat"), "wt")

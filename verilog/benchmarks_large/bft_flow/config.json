@@ -1,0 +1,6 @@
+{
+    "files": 
+    [
+        "bft_mesh0.v", "bft_mesh1.v", "bft_xbar.v", "bft_tree.v"
+    ]
+}

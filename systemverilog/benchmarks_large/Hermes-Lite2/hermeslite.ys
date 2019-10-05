@@ -1,0 +1,2 @@
+read -sv hermeslite.sv
+synth_xilinx -top hermeslite

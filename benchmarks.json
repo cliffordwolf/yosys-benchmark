@@ -1,8 +1,0 @@
-{
-  "Small": {
-    "Tool": "yosys",
-    "Directive": "Default",
-    "Report": "dsp_small_default_flatten",
-    "YosysArgs": "-abc9 -flatten"
-  }
-}

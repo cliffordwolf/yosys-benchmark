@@ -5,7 +5,6 @@ ifdef SMALL
         include ../small.mk
 endif
 export YOSYS=/opt/yosys-xc7dsp/bin/yosys
-
 DEVICE=xc7a
 GRADE=1
 TARGET=$(DIR)

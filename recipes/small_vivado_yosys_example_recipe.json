@@ -1,0 +1,15 @@
+{
+  "Small": [
+    {
+      "Tool": "vivado",
+      "Directive": "Default",
+      "Report": "vivado_small_default"
+    },
+    {
+      "Tool": "yosys",
+      "Directive": "Default",
+      "Report": "yosys_small_default",
+      "YosysArgs": "-abc9 -flatten"
+    }
+  ]
+}

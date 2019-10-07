@@ -1,4 +1,4 @@
-verilog work soc_basesoc_minispartan6_lm32.v.gz
+verilog work soc_basesoc_minispartan6_lm32.v
 verilog work lm32/rtl/lm32_ram.v
 verilog work lm32/rtl/lm32_load_store_unit.v
 verilog work lm32/rtl/lm32_dp_ram.v

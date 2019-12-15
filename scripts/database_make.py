@@ -95,8 +95,12 @@ while queue:
                                             stderr=sys.stderr
                                             )
                 datfile.close()
-                    
+
             if (item.endswith(".vhdl")):
+                # diego: VHDL broken, reading testvector files 
+                if (item.endswith("_tb.vhdl")):
+                    print("  Skipping VHDL testvector file " +item)
+                    continue
                 vhdlsrc = os.path.join(subdir, item)
                 filewithoutext, file_extension = os.path.splitext(item)
                 datfile = open(os.path.join(dbpath, filewithoutext + ".dat"), "wt")

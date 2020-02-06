@@ -32,8 +32,10 @@ for D in *; do
 	if [ -f "$D/yosys.txt" ]; then 
 	    tool=`sed -n 's/.*\(Yosys\ [0-9].[0-9].*\).*/\1/p' "$D/yosys.txt" | tail -n 1`
             runtime=`printf "%1.f" $(sed -n 's/.*user\(.*\)system.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)`
-	    #peakmem=`printf "%1.f" $(sed -n 's/.*total,\(.*\)MB\ resident.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)` 
-	    peakmem=`printf "%1.f" $(grep "MEM:[[:blank:]].*$" "$D/yosys.txt" | awk '{print $13}')`
+	    peakmem=`printf "%1.f" $(sed -n 's/.*total,\(.*\)MB\ resident.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)` 
+	    if [ -z "$peakmem" ]; then # ABC child process included, format change
+	         peakmem=`printf "%1.f" $(grep "MEM:[[:blank:]].*$" "$D/yosys.txt" | awk '{print $13}')`
+	    fi
 	else
 	    tool="Vivado 2018.3" #TODO: Select appropiate tool/version
 	    runtime=`sed -n 's/.*Synthesis Report : Time (s): cpu =\(.*\)\;.*/\1/p' "$D/test_$min_period.txt" | sed 's/;\s.*$//' | sed -E 's/(.*):(.+):(.+)/\1*3600+\2*60+\3/;s/(.+):(.+)/\1*60+\2/' | bc`

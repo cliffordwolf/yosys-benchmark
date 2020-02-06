@@ -3,14 +3,14 @@
     {
       "Tool": "yosys_s6",
       "Directive": "Default",
-      "Report": "test/20200115_35e49fd_flow3",
+      "Report": "benchmark_flow3",
       "Prepend": "scratchpad -set print_stats.include_children 1; scratchpad -copy abc9.script.flow3 abc9.script",
       "YosysArgs": "-abc9 -flatten -iopad -dff"
     },
     { 
       "Tool": "yosys_s6",
       "Directive": "Default",
-      "Report": "test/20200115_35e49fd_default",
+      "Report": "benchmark_default",
       "Prepend": "scratchpad -set print_stats.include_children 1",
       "YosysArgs": "-abc9 -flatten -iopad -dff"
     }

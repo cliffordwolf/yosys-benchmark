@@ -89,6 +89,6 @@ if __name__=="__main__":
                         type=argparse.FileType('r'))
     arguments=parser.parse_args()
     execute_genpy()
-    #execute_json(arguments.recipe[0].name)
+    execute_json(arguments.recipe[0].name)
 
 

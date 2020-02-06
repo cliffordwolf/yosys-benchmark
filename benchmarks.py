@@ -3,6 +3,7 @@
 import sys
 import re
 import os
+import subprocess
 import json
 import argparse
 import logging
@@ -19,8 +20,18 @@ def execute_command(cmd):
     if (process != 0):
         logging.error("An error occurred while running: {}".format(cmd))
 
+def execute_genpy():
+    for subdir, dirs, files in os.walk("./verilog"):
+        for file in files:
+            if (file == "generate.py"):
+                script = os.path.join(subdir, file)
+                print("Executing " + script)
+                retval = subprocess.check_call(["python3","generate.py"],
+                                               cwd=os.path.abspath(subdir),
+                                               stdout=sys.stdout,
+                                               stderr=sys.stderr)
 def run_main(runtype, **recipeFile):
-    command=('{} make -j$(nproc) DIRECTIVE={} DIR={}'.format(runtype, recipeFile['Directive'], recipeFile['Report']))
+    command=('{} make -j$(nproc) PREPEND="{}" DIRECTIVE={} DIR={}'.format(runtype, recipeFile['Prepend'], recipeFile['Directive'], recipeFile['Report']))
     if (recipeFile["Tool"] == "vivado"):
         logging.info("Moving to Vivado directory to store results. Executing command {}".format(command))
         os.chdir(vivado_makefile)
@@ -46,7 +57,7 @@ def run_main(runtype, **recipeFile):
     else:
         logging.warning("No process executed. Review the JSON recipe file")
  
-def execute_json2(data):
+def execute_json(data):
     """
     This function parses a JSON file
     to get the information of tool for synthesis (yosys, vivado, ise),
@@ -77,6 +88,7 @@ if __name__=="__main__":
                         help="Recipe in JSON format for Benchmarks",
                         type=argparse.FileType('r'))
     arguments=parser.parse_args()
-    execute_json2(arguments.recipe[0].name)
+    execute_genpy()
+    #execute_json(arguments.recipe[0].name)
 
 

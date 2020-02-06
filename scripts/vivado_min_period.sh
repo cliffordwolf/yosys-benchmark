@@ -22,7 +22,6 @@ ip=${ip%.*}
 
 VIVADO=${VIVADO:-vivado}
 
-# rm -rf tab_${ip}_${dev}_${grade}
 if [ $6 == "--rdir" ] || [ $6 == "-d" ]
 then
   echo "Saving results in ${7}"
@@ -121,7 +120,6 @@ synth_case() {
 			link_design -part ${xl_device} -mode out_of_context -top ${ip}
 		EOT
 	fi
-
 	cat > test_${2}.xdc <<- EOT
 		create_clock -period ${speed:0: -1}.${speed: -1} [get_ports -nocase -regexp .*cl(oc)?k.*]
 	EOT
@@ -142,7 +140,6 @@ synth_case() {
 	mv test_${2}.log test_${2}.txt
 }
 
-## diego
 for args in "$@"
 do
 	if [ $args == "--help" ] || [ $args == "-h" ]
@@ -157,11 +154,10 @@ done
 
 got_violated=false
 got_met=false
-
 countdown=2
+
 while [ $countdown -gt 0 ]; do
 	synth_case $directive $speed
-
 	if grep -q '^Slack.*(VIOLATED)' test_${speed}.txt; then
 		echo "        tab_${ip}_${dev}_${grade}/test_${speed} VIOLATED"
 		[ $got_met = true ] && step=$((step / 2))

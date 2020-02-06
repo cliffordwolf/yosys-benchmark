@@ -11,7 +11,6 @@ for D in *; do
         latch=`sed -n "s/|\s\+\(Register as Latch\)\s\+|\s\+\([0-9]\+\).*/\t\1: \2/p" "$D/test_$min_period.txt" | sed 's/[^0-9]*//g'| tail -n 1`
         if grep -q -e "|\s\+CARRY4\s\+" "$D/test_$min_period.txt"; then
             carry=`sed -n "s/|\s\+\(CARRY4\)\s\+|\s\+\([0-9]\+\).*/\t\1: \2/p" "$D/test_$min_period.txt" | sed -e 's/.*:[0-9 ]//g' | tail -n 1`
-	    #sed -r 's/([^0-9]*([0-9]*)){2}.*/\2/' | tail -n 1`
         else
 	    carry="0"
         fi
@@ -19,29 +18,28 @@ for D in *; do
         f8=`sed -n "s/|\s\+\(F8 Muxes\)\s\+|\s\+\([0-9]\+\).*/\2/p" "$D/test_$min_period.txt" | tail -n 1`
 	muxfx=$(($f7+$f8))
 	if grep -q -e "|\s\+RAM[A-Z][0-9]\{2\}[A-Z]" "$D/test_$min_period.txt"; then
-		bram=`sed -n "s/|\s\+\(RAMB[0-9][0-9][A-Z][0-9]\)\s\+|\s\+\([0-9]\+\).*/\1: \2/p" "$D/test_$min_period.txt" | awk -F: '{ print $NF }' | paste -sd+ | bc`
+	    bram=`sed -n "s/|\s\+\(RAMB[0-9][0-9][A-Z][0-9]\)\s\+|\s\+\([0-9]\+\).*/\1: \2/p" "$D/test_$min_period.txt" | awk -F: '{ print $NF }' | paste -sd+ | bc`
 	else
-		bram=0
+	    bram=0
 	fi
 	dsp=`sed -n "s/|\s\+\(DSP48E1\)\s\+|\s\+\([0-9]\+\).*/\t\1: \2/p" "$D/test_$min_period.txt" | sed -e 's/.*:[0-9 ]//g' | tail -n 1`
 	if [ -z "$dsp" ]; then
-		dsp48=0
+	    dsp48=0
 	else
-		dsp48=$dsp
+	    dsp48=$dsp
 	fi
         llevels=`sed -n "s/|\s\+End Point Clock\s\+.*|\s\+\([0-9]\+\).*/\tLogic Levels: \1/p" "$D/test_$min_period.txt" | sed 's/[^0-9]*//g' | tail -n 1`
 	if [ -f "$D/yosys.txt" ]; then 
-		tool=`sed -n 's/.*\(Yosys\ [0-9].[0-9].*\).*/\1/p' "$D/yosys.txt" | tail -n 1`
-                runtime=`printf "%1.f" $(sed -n 's/.*user\(.*\)system.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)`
-		peakmem=`printf "%1.f" $(sed -n 's/.*total,\(.*\)MB\ resident.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)` 
+	    tool=`sed -n 's/.*\(Yosys\ [0-9].[0-9].*\).*/\1/p' "$D/yosys.txt" | tail -n 1`
+            runtime=`printf "%1.f" $(sed -n 's/.*user\(.*\)system.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)`
+	    #peakmem=`printf "%1.f" $(sed -n 's/.*total,\(.*\)MB\ resident.*/\1/p' "$D/yosys.txt" |  sed -e 's/s\b//g' | tail -n 1)` 
+	    peakmem=`printf "%1.f" $(grep "MEM:[[:blank:]].*$" "$D/yosys.txt" | awk '{print $13}')`
 	else
-		tool="Vivado 2018.3" #TODO: Select appropiate tool/version
-	       #runtime=`sed -n 's/.*Synthesis Report : Time (s): cpu =\(.*\)\;.*/\1/p' "$D/test_$min_period.txt" | sed 's/;\s.*$//'| awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'` this also works
-		runtime=`sed -n 's/.*Synthesis Report : Time (s): cpu =\(.*\)\;.*/\1/p' "$D/test_$min_period.txt" | sed 's/;\s.*$//' | sed -E 's/(.*):(.+):(.+)/\1*3600+\2*60+\3/;s/(.+):(.+)/\1*60+\2/' | bc`
-                peakmem=`printf "%1.f" $(sed -n 's/.*Synthesis Report\(.*\)\..*/\1/p' "$D/test_$min_period.txt" |sed -n 's/.*peak =\(.*\);..*/\1/p')`
+	    tool="Vivado 2018.3" #TODO: Select appropiate tool/version
+	    runtime=`sed -n 's/.*Synthesis Report : Time (s): cpu =\(.*\)\;.*/\1/p' "$D/test_$min_period.txt" | sed 's/;\s.*$//' | sed -E 's/(.*):(.+):(.+)/\1*3600+\2*60+\3/;s/(.+):(.+)/\1*60+\2/' | bc`
+            peakmem=`printf "%1.f" $(sed -n 's/.*Synthesis Report\(.*\)\..*/\1/p' "$D/test_$min_period.txt" |sed -n 's/.*peak =\(.*\);..*/\1/p')`
 	fi
-	echo "Design: $D"
-	#echo ",Tool,LUT,FF,BRAM,LUTRAM,DSP,SRL,CARRY4,MuxFx,Logic Levels,Max Frequency,Peak Runtime in s,Peak Memory in MB"
-	echo ",\"$tool\",$lut_logic,$flops,$bram,$dram,$dsp48,$lut_slr,$carry,$muxfx,$llevels,$fmax,$runtime,$peakmem"
+	#echo "Design: $D"
+	echo "$D,\"$tool\",$lut_logic,$flops,$bram,$dram,$dsp48,$lut_slr,$carry,$muxfx,$llevels,$fmax,$runtime,$peakmem"
     fi
 done

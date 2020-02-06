@@ -4,7 +4,9 @@ endif
 ifdef SMALL
         include ../small.mk
 endif
-export YOSYS=/opt/yosys-xc7dsp/bin/yosys
+
+export YOSYS=yosys
+
 DEVICE=xc7a
 GRADE=1
 TARGET=$(DIR)
@@ -18,7 +20,7 @@ tab_%_$(DEVICE)_$(GRADE)/results.txt:
 	if ! zgrep -q "\(* top *\)" $${f[0]}; then \
 		TOP="-top $*"; \
 	fi; \
-	YOSYS_SYNTH="synth_xilinx $(YSARGS) -edif $(PWD)/$(DIR)/$$(dirname $@)/$*.edif" bash ../../scripts/vivado_min_period.sh --directive $(DIRECTIVE) $${f[0]} $(DEVICE) $(GRADE) --rdir $(DIR)
+	YOSYS_SYNTH="$(PREPEND); synth_xilinx $(YSARGS) -edif $(PWD)/$(DIR)/$$(dirname $@)/$*.edif" bash ../../scripts/vivado_min_period.sh --directive $(DIRECTIVE) $${f[0]} $(DEVICE) $(GRADE) --rdir $(DIR)
 
 clean:
 	rm -rf tab_*

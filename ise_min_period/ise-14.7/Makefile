@@ -3,11 +3,10 @@ unexport YOSYS
 
 DEVICE=xc6s
 GRADE=2
-TARGET=$(DIR)
 TARGETS = $(patsubst %,tab_%_$(DEVICE)_$(GRADE)/results.txt,$(basename $(notdir $(BENCHMARKS))))
 
 all: $(TARGETS)
-	cd $(DIR) && ../../../scripts/ise_min_period_table.sh > results_$(DEVICE)_$(DIR).csv
+	cd $(DIR) && $(SCRIPTS_DIR)/ise_min_period_table.sh > results_$(DEVICE).csv
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
 	f=(../../*/benchmarks_*/*/$*.{v.gz,v,vhdl}); \

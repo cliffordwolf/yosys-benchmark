@@ -36,7 +36,7 @@ input [3:0]   i15 ;
 
 output reg [3:0] binary_out  ;
 
-input [3:0] encoder_in ;
+input [15:0] encoder_in ;
 input  enable ;
 
 always @ (*)

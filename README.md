@@ -4,6 +4,7 @@ This is a collection of Verilog designs of different type and size, used as benc
 
 Create a PR if you think you have an interesting benchmark.
 
+
 ### benchmarks_small
 
 This directory contains small (mostly synthetic) benchmarks that can be used
@@ -46,3 +47,59 @@ Example:
     ]
 }
 ```
+
+# The _benchmarks.py_ script
+
+## Setup
+The `litex` benchmarks needs submodules to be cloned as well.
+Inside your clone directory:
+``` 
+git submodule update --init --recursive
+```
+
+## Execution
+
+The __benchmarks.py__ script reads a JSON file on which the _Tool_, _Directive_, _Report_ and _Prepend_ fields are defined. The script passed all that information to _vivado_min_period.sh_. An example of such JSON file is as follows:
+```json
+{
+  "Large": [
+    {
+      "Tool": "yosys",
+      "Directive": "Default",
+      "Report": "yosys_large_default",
+      "YosysArgs": "-abc9",
+      "Prepend": "scratchpad -set abc9.if.C 16"
+    },
+    {
+      "Tool": "vivado",
+      "Directive": "Default",
+      "Report": "vivado_large_default",
+      "YosysArgs": "-abc9"
+    }
+  ],
+  "Small": [
+    {
+      "Tool": "vivado",
+      "Directive": "Default",
+      "Report": "vivado_small_default",
+      "YosysArgs": "-abc9"
+    },
+    {
+      "Tool": "yosys",
+      "Directive": "Default",
+      "Report": "yosys_small_default",
+      "YosysArgs": "-abc9"
+    }
+  ]
+}
+```
+*Note:* There are two keys in the JSON file, one for _Small_ designs and other for _Large_ ones. With this mechanism, both benchmarks (or just one type) can be run and stored in different directories. 
+
+* Let JSON file name = benchmarks.json, the script is called as follows:
+```bash
+$ ./benchmarks.py --recipe benchmarks.json
+```
+
+* In this example, two directories will be created under _vivado_min_period/vivado-2018.3/_ and _vivado_min_period/yosys-master-abc9/_ respectively. These directories will be named as defined in __"Report"__ field of JSON recipe.
+
+* A file called _results_$(DEVICE)_$(DIRECTIVE)_$(DIR).csv_ is generated after script finish. This CSV file contains the information that fills the fields in the spreadsheet reports. 

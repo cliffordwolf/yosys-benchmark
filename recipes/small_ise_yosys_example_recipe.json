@@ -1,0 +1,15 @@
+{
+  "Small": [
+    {
+      "Tool": "ise",
+      "Directive": "Default",
+      "Report": "ise_small_default_10012019"
+    },
+    {
+      "Tool": "yosys_s6",
+      "Directive": "Default",
+      "Report": "yosys_s6_small_default_10012019",
+      "YosysArgs": "-abc9 -flatten"
+    }
+  ]
+}

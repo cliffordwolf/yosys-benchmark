@@ -1,19 +1,26 @@
-include ../common.mk
-export YOSYS=/opt/yosys-master/bin/yosys
+ifdef LARGE
+        include ../large.mk
+endif
+ifdef SMALL
+        include ../small.mk
+endif
 
+export YOSYS=yosys
+
+SCRIPTS_DIR=$(shell realpath ../../scripts)
 DEVICE=xc7a
 GRADE=1
 TARGETS = $(patsubst %,tab_%_$(DEVICE)_$(GRADE)/results.txt,$(basename $(notdir $(BENCHMARKS))))
 
 all: $(TARGETS)
-	../../scripts/vivado_min_period_table.sh
+	cd $(DIR) && $(SCRIPTS_DIR)/vivado_min_period_table.sh > results_$(DEVICE)_$(DIRECTIVE).csv
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
 	f=(../../*/benchmarks_*/*/$*.{v.gz,v,vhdl}); \
 	if ! zgrep -q "\(* top *\)" $${f[0]}; then \
 		TOP="-top $*"; \
 	fi; \
-	YOSYS_SYNTH="synth_xilinx -abc9 -edif $(PWD)/$$(dirname $@)/$*.edif" bash ../../scripts/vivado_min_period.sh $${f[0]} $(DEVICE) $(GRADE)
+	YOSYS_SYNTH="$(PREPEND); synth_xilinx $(YSARGS) -edif $(PWD)/$(DIR)/$$(dirname $@)/$*.edif" bash ../../scripts/vivado_min_period.sh --directive $(DIRECTIVE) $${f[0]} $(DEVICE) $(GRADE) --rdir $(DIR)
 
 clean:
-	rm -r tab_*
+	rm -r $(DIR)/tab_*

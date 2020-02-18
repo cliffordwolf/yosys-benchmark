@@ -1,0 +1,30 @@
+{
+  "Large": [
+    {
+      "Tool": "yosys",
+      "Directive": "Default",
+      "Report": "yosys_large_default",
+      "YosysArgs": "-abc9 -flatten_before_abc"
+    },
+    {
+      "Tool": "vivado",
+      "Directive": "Default",
+      "Report": "vivado_large_default",
+      "YosysArgs": "-abc9 -flatten"
+    }
+  ],
+  "Small": [
+    {
+      "Tool": "vivado",
+      "Directive": "Default",
+      "Report": "vivado_small_default",
+      "YosysArgs": "-abc9 -flatten"
+    },
+    {
+      "Tool": "yosys",
+      "Directive": "Default",
+      "Report": "yosys_small_default",
+      "YosysArgs": "-abc9 -flatten"
+    }
+  ]
+}

@@ -6,10 +6,11 @@ GRADE=2
 TARGETS = $(patsubst %,tab_%_$(DEVICE)_$(GRADE)/results.txt,$(basename $(notdir $(BENCHMARKS))))
 
 all: $(TARGETS)
-	../../scripts/ise_min_period_table.sh
+	cd $(DIR) && $(SCRIPTS_DIR)/ise_min_period_table.sh > results_$(DEVICE).csv
 
 tab_%_$(DEVICE)_$(GRADE)/results.txt:
-	../../scripts/ise_min_period.sh ../../*/benchmarks_*/*/$*.{v,vhdl} $(DEVICE) $(GRADE)
+	f=(../../*/benchmarks_*/*/$*.{v.gz,v,vhdl}); \
+	../../scripts/ise_min_period.sh $${f[0]} $(DEVICE) $(GRADE) --rdir $(DIR)
 
 clean:
-	rm -r tab_*
+	 rm -r $(DIR)/tab_*
